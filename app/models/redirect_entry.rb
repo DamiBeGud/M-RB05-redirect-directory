@@ -1,0 +1,2 @@
+class RedirectEntry < ApplicationRecord
+end
