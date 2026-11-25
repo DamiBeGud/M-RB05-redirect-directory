@@ -5,9 +5,10 @@ Rake::TestTask.new(:unit) do |task|
 end
 task default: :unit
 
-# Unit tests must not load DB task configuration or schema helpers in the Rake
-# parent process. Ordinary native migration tasks retain Rails' normal loader.
-unless ARGV.empty? || ARGV == ["unit"]
+# Rails consumes the command from ARGV before Rake loads this file.
+# Keep the standalone unit suite independent of database configuration.
+application_tasks = Rake.application.top_level_tasks - %w[default unit]
+if application_tasks.any? || Rake.application.options.show_tasks
   require_relative "config/application"
   Rails.application.load_tasks
 end
